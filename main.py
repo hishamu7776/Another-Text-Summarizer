@@ -7,6 +7,7 @@ from normalizer import Normalizer
 
 nltk.download('stopwords')
 nltk.download('punkt')
+nltk.download('omw-1.4')
 
 if __name__ == "__main__":
     file_path = "../dailymail/dataset/test.csv"
@@ -16,7 +17,16 @@ if __name__ == "__main__":
     preprocess.sentence_split()
     preprocess.sentence_filter(stopwords=stopwords, occurance=2)
 
-    normalizer = Normalizer(sentences=preprocess.sentence_vectors,
-                            word_frequency=preprocess.word_freq)
+    normalizer = Normalizer()
     
-    normalizer.stem()
+    stem = normalizer.normalize(sentences=preprocess.sentence_vectors ,type="stemming")
+    stem_vector, stem_matrix = normalizer.vectorize(stem)
+
+    lemma = normalizer.normalize(sentences=preprocess.sentence_vectors ,type="lemmatizer")
+    lemma_vector, lemma_matrix = normalizer.vectorize(stem)
+
+    ultra_stem_fix_1 = normalizer.normalize(sentences=preprocess.sentence_vectors ,type="ultra-stemming",fix=1)
+    ultra_stem_fix_1_vector, ultra_stem_fix_1_matrix = normalizer.vectorize(ultra_stem_fix_1)
+
+    print(lemma_vector)
+    
