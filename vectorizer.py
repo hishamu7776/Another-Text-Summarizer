@@ -3,7 +3,7 @@ import numpy as np
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 
 
-class Normalizer:
+class Vectorizer:
     
     @staticmethod
     def normalize(sentences = None,type = "stemming", fix=1):
