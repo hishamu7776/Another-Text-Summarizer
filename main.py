@@ -5,6 +5,7 @@ from nltk.corpus import stopwords
 from preprocess import Preprocess
 from vectorizer import Vectorizer
 from evaluator import Evaluator
+from plots import Plots
 
 nltk.download('stopwords')
 nltk.download('punkt')
@@ -16,6 +17,7 @@ if __name__ == "__main__":
     preprocess = Preprocess(path=file_path, columns=['article', 'highlights'])
     vectorizer = Vectorizer()
     evaluator = Evaluator()
+    plots = Plots()
 
     preprocess.select_a_document()
     preprocess.sentence_split()
@@ -36,5 +38,5 @@ if __name__ == "__main__":
     raw_vector, raw_matrxi = vectorizer.vectorize(raw)
 
     density_matrix_fix1 = evaluator.matrix_density(ultra_stem_fix_1_matrix)
-    print(density_matrix_fix1)
+    plots.plot_density(density_matrix_fix1)
     
