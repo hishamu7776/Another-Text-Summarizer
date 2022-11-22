@@ -18,5 +18,10 @@ class Plots:
         plt.xlabel(xlabel)
         sns.barplot(x=x_val,y=y_val)
         plt.show()
+    @staticmethod
+    def plot_frequency():
+        return
+        
+    
 
         

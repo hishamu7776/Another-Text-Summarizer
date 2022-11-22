@@ -12,3 +12,7 @@ class Evaluator:
                     density_matrix[idx][jdx] = cw/size
         return density_matrix
     
+    def compute_volume():
+        volume = 0
+        return volume
+    
