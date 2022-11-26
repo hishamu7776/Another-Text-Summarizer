@@ -18,10 +18,18 @@ class Plots:
         plt.xlabel(xlabel)
         sns.barplot(x=x_val,y=y_val)
         plt.show()
+    
     @staticmethod
-    def plot_frequency():
+    def line_plot(data = None, x_label=None, y_label=None, title=None):
+        max_val = max(data.values())
+        data =  {key:value/max_val for key,value in data.items()}
+        plt.title(title)
+        sns.lineplot(data=data)
+        plt.ylabel(y_label)
+        plt.xlabel(x_label)
+        plt.show()
         return
-        
+    
     
 
         
