@@ -69,7 +69,13 @@ if __name__ == "__main__":
 
 
     word_length_distribution = evaluator.word_length_distribution(raw)
-    plots.line_plot(data=word_length_distribution, x_label="Word Lengths", y_label="Frequency", title="Average distribution of letters")
+    
+    cor_matrix = evaluator.cross_correlate_all(matrices = [raw_matrix, stem_matrix, lemma_matrix, ultra_stem_fix_1_matrix, ultra_stem_fix_2_matrix], names=['Raw', 'Stemming', 'Lemmatizer', 'Fix1', 'Fix2'])
+    
+    
+    
+
+
     '''
     plots.plot_density(matrix = density_matrix_raw,x_tick = raw_vector, title="Raw Data")
     plots.plot_density(matrix = density_matrix_stem,x_tick = stem_vector, title="Stemming")
@@ -78,4 +84,5 @@ if __name__ == "__main__":
     plots.plot_density(matrix = density_matrix_fix2,x_tick = ultra_stem_fix_2_vector, title="Fix 2")
     plots.bar_plot(y_val=[avg_density_raw,avg_density_stem,avg_density_lemma,avg_density_fix1,avg_density_fix2],x_val=["Raw","Stem","Lemma","Fix1","Fix2"],title="Average Density")
     plots.bar_plot(y_val=[volume_raw,volume_stem,volume_lemma,volume_fix1,volume_fix2],x_val=["Raw","Stem","Lemma","Fix1","Fix2"],title="Volume")
+    plots.line_plot(data=word_length_distribution, x_label="Word Lengths", y_label="Frequency", title="Average distribution of letters")
     '''

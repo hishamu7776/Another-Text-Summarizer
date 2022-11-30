@@ -4,11 +4,11 @@ import seaborn as sns
 
 class Plots:
     @staticmethod
-    def plot_density(matrix=None,x_tick=None,title=None):
+    def plot_density(matrix=None,x_tick=None, y_tick= None,title=None,labels=None, annot=False):
         plt.title(title)
-        plt.ylabel("sentences")
-        plt.xlabel("words")
-        sns.heatmap(data = matrix ,xticklabels=x_tick, cbar=False) #annot=True
+        plt.ylabel(labels[0])
+        plt.xlabel(labels[1])
+        sns.heatmap(data = matrix ,xticklabels=x_tick, yticklabels=y_tick,cbar=False, annot=annot)
         plt.savefig('./plots/'+title+'.png')
     
     @staticmethod
@@ -29,6 +29,7 @@ class Plots:
         plt.xlabel(x_label)
         plt.show()
         return
+        
     
     
 
