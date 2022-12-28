@@ -3,7 +3,7 @@ import numpy as np
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 
 
-class Vectorizer:
+class Helper:
     
     @staticmethod
     def normalize(sentences = None,type = "stemming", fix=1):
@@ -36,6 +36,7 @@ class Vectorizer:
             for row, line in enumerate(base):
                 matrix[row, col] = line.count(item)
         return vector, matrix
+    
 
 
         

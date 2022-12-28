@@ -7,10 +7,10 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 
 class Preprocess:
 
-    def __init__(self, path=None, dataset_type = 'single-doc'):
-        
-        self.dataset_type = dataset_type
-        self.path = path  
+    def __init__(self, path=None, file_type='text'):
+
+        self.file_type = file_type
+        self.path = path
         self.word_tokens = list()
         self.word_freq = dict()
         self.sentence_tokens = list()
@@ -18,22 +18,23 @@ class Preprocess:
         self.sentence_vectors = list()
 
         try:
-            if self.dataset_type == 'dataframe':
+            if self.file_type == 'dataframe':
                 self.corpus = pd.read_csv(path)
             else:
-                self.corpus = open(self.path, "r", encoding='utf-8')    
+                self.corpus = open(self.path, "r", encoding='utf-8')                
         except:
-            print("Error**-Please check your file path or file type.")            
-
+            print("Error**-Please check your file path or file type.")
 
     def read_article(self, column=None):
-        if self.dataset_type=='dataframe':
+        if self.file_type == 'dataframe':
             if column:
                 self.document = self.corpus[column]
-            else:   
-                print("Mentioned data type is dataframe and column for desired document is not mentioned.")
+            else:
+                print(
+                    "Mentioned data type is dataframe and column for desired document is not mentioned."
+                )
                 return
-        elif self.dataset_type == 'single-doc':
+        elif self.file_type == 'text':
             self.document = self.corpus.read()
             self.corpus.close()
             return
@@ -46,7 +47,7 @@ class Preprocess:
 
     def sentence_filter(self, stopwords, occurance=2):
         PUNCTUATION_RE = re.compile('[^\w\s]')
-        SPACE_RE = re.compile('[\s]+')
+        #SPACE_RE = re.compile('[\s]+')
         NEW_LINE = re.compile('\n')
         self.word_tokens = list()
         sentence_vectors_temp = list()
@@ -67,10 +68,11 @@ class Preprocess:
         self.word_freq = FreqDist(self.word_tokens)
 
         for word_list in sentence_vectors_temp:
-            sentence_vector = [word for word in word_list if self.word_freq[word] >= occurance]
+            sentence_vector = [
+                word for word in word_list if self.word_freq[word] >= occurance
+            ]
             if len(sentence_vector) >= occurance:
                 self.sentence_vectors.append(sentence_vector)
-
 
     @staticmethod
     def tokenize(string):

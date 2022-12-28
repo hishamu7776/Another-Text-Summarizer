@@ -1,14 +1,28 @@
+import heapq
 import numpy as np
+import helper as Helper
 
 class Summarizer:
-    def __init__(self,summarizer="normal", matrix = None):
-        self.summarizer = type
-        if matrix:
-            self.matrix = matrix
+    def __init__(self, summarizer="normal", preprocess = None, num_sentences = 5):
+        self.summarizer = summarizer
+        self.preprocess = preprocess
+        self.num_sentences = num_sentences
+        self.weighted_word_freq = dict()
+        self.sentence_scores = dict()
+        self.matrix = []
 
     def summarize(self):
         if self.summarizer == 'normal':
-            return
+            maximum_frequency = max(self.preprocess.word_freq.values())
+            for word in self.preprocess.word_freq:
+                self.weighted_word_freq[word] = round(self.preprocess.word_freq[word]/maximum_frequency,3)
+            for sentence in self.preprocess.sentences:
+                score = 0
+                for word in sentence.split():
+                    if word in self.weighted_word_freq:
+                        score+=self.weighted_word_freq[word]
+                self.sentence_scores[sentence] = score
+                return self.find_summary(num_sentences=self.num_sentences, scores=self.sentence_scores)
         else:
             self.artex(self.artex(self.matrix))
 
@@ -55,3 +69,11 @@ class Summarizer:
     @staticmethod
     def randbin(P,N,prob=1/2):  
         return np.random.choice([0, 1], size=(P,N), p=[prob, 1-prob])
+    
+    @staticmethod
+    def find_summary(num_sentences = 5, scores = None):
+        print(scores)
+        sentences = heapq(num_sentences, scores, key = scores.get)
+        summary = ' '.join(sentences)
+        return summary
+
