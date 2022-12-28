@@ -7,18 +7,41 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 
 class Preprocess:
 
-    def __init__(self, path=None, columns=None):
-        self.corpus = pd.read_csv(path)
-        self.document_column = columns[0]
-        self.highlights_column = columns[1]
+    def __init__(self, path=None, dataset_type = 'single-doc'):
+        
+        self.dataset_type = dataset_type
+        self.path = path  
+        self.word_tokens = list()
+        self.word_freq = dict()
+        self.sentence_tokens = list()
+        self.sentences = list()
+        self.sentence_vectors = list()
 
-    def select_a_document(self, index=0):
-        self.document = self.corpus[self.document_column][index]
-        self.highlight = self.corpus[self.highlights_column], [index]
-        return self.document, self.highlight
+        try:
+            if self.dataset_type == 'dataframe':
+                self.corpus = pd.read_csv(path)
+            else:
+                self.corpus = open(self.path, "r", encoding='utf-8')    
+        except:
+            print("Error**-Please check your file path or file type.")            
+
+
+    def read_article(self, column=None):
+        if self.dataset_type=='dataframe':
+            if column:
+                self.document = self.corpus[column]
+            else:   
+                print("Mentioned data type is dataframe and column for desired document is not mentioned.")
+                return
+        elif self.dataset_type == 'single-doc':
+            self.document = self.corpus.read()
+            self.corpus.close()
+            return
+
+        return self.document
 
     def sentence_split(self):
-        self.sentences = sent_tokenize(self.document)
+        self.sentences.extend(sent_tokenize(self.document))
         return self.sentences
 
     def sentence_filter(self, stopwords, occurance=2):
@@ -26,32 +49,28 @@ class Preprocess:
         SPACE_RE = re.compile('[\s]+')
         NEW_LINE = re.compile('\n')
         self.word_tokens = list()
+        sentence_vectors_temp = list()
         #Cleaning all sentences
-        new_sentence_list = list()
         for index, sentence in enumerate(self.sentences):
             sentence = sentence.lower()
             sentence = PUNCTUATION_RE.sub('', sentence)
-            #print(sentence)
             sentence = NEW_LINE.sub('', sentence)
-            #print(sentence)
-            sentence = [
+            self.sentence_tokens.append(sentence)
+            word_list = [
                 word for word in sentence.split() if word not in stopwords
             ]
             #print(sentence)
             if len(sentence) > 0:
-                new_sentence_list.append(sentence)
-                self.word_tokens.extend(sentence)
+                sentence_vectors_temp.append(word_list)
+                self.word_tokens.extend(word_list)
 
         self.word_freq = FreqDist(self.word_tokens)
 
-        for index, sentence in enumerate(new_sentence_list):
-            for word, freq in self.word_freq.items():
-                if freq < occurance and word in sentence:
-                    sentence.remove(word)
-                new_sentence_list[index] = sentence
+        for word_list in sentence_vectors_temp:
+            sentence_vector = [word for word in word_list if self.word_freq[word] >= occurance]
+            if len(sentence_vector) >= occurance:
+                self.sentence_vectors.append(sentence_vector)
 
-        self.sentence_vectors = new_sentence_list
-        return new_sentence_list
 
     @staticmethod
     def tokenize(string):
