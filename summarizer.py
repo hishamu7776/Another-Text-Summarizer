@@ -3,7 +3,7 @@ import numpy as np
 import helper as Helper
 
 class Summarizer:
-    def __init__(self, summarizer="normal", preprocess = None, num_sentences = 5):
+    def __init__(self, summarizer="freq", preprocess = None, num_sentences = 5):
         self.summarizer = summarizer
         self.preprocess = preprocess
         self.num_sentences = num_sentences
@@ -12,17 +12,17 @@ class Summarizer:
         self.matrix = []
 
     def summarize(self):
-        if self.summarizer == 'normal':
+        if self.summarizer == 'freq':
             maximum_frequency = max(self.preprocess.word_freq.values())
             for word in self.preprocess.word_freq:
-                self.weighted_word_freq[word] = round(self.preprocess.word_freq[word]/maximum_frequency,3)
-            for sentence in self.preprocess.sentences:
+                self.weighted_word_freq[word] = self.preprocess.word_freq[word]/maximum_frequency
+            for index, sentence in enumerate(self.preprocess.sentence_tokens):
                 score = 0
                 for word in sentence.split():
                     if word in self.weighted_word_freq:
                         score+=self.weighted_word_freq[word]
-                self.sentence_scores[sentence] = score
-                return self.find_summary(num_sentences=self.num_sentences, scores=self.sentence_scores)
+                self.sentence_scores[self.preprocess.sentences[index]] = round(score,3)
+            return self.find_summary(num_sentences=self.num_sentences, scores=self.sentence_scores)
         else:
             self.artex(self.artex(self.matrix))
 
@@ -72,8 +72,8 @@ class Summarizer:
     
     @staticmethod
     def find_summary(num_sentences = 5, scores = None):
-        print(scores)
-        sentences = heapq(num_sentences, scores, key = scores.get)
+        
+        sentences = heapq.nlargest(num_sentences, scores, key = scores.get)
         summary = ' '.join(sentences)
         return summary
 
