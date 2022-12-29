@@ -3,39 +3,39 @@ import numpy as np
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 
 
-class Helper:
-    
+class Helper:    
     @staticmethod
-    def normalize(sentences = None,type = "stemming", fix=1):
-        base = []
-        if type == "stemming":
+    def vectorize_word(sentences = None, word_normalizer = "stem", fix = 1):
+
+        root = list()
+        if word_normalizer == "stem":
             stemmer = PorterStemmer()
             for sentence in sentences:
                 sentence = [stemmer.stem(word) for word in sentence]
-                base.append(sentence)
-        elif type == "lemmatizer":
+                root.append(sentence)
+        elif word_normalizer == "lemma":
             lemmatizer = WordNetLemmatizer()
             for sentence in sentences:
                 sentence = [lemmatizer.lemmatize(word, pos="a") for word in sentence]
-                base.append(sentence)
-        elif type == "ultra-stemming":
+                root.append(sentence)
+        elif word_normalizer == "ultra":
             for sentence in sentences:
                 sentence = [word[:fix] for word in sentence]
-                base.append(sentence)
+                root.append(sentence)
+        elif word_normalizer == "raw":
+            root = sentences
         else:
             print(
-                "The assigned normalizer does not support or incorrect input.")
+                "Error**The assigned normalizer does not support or incorrect normalizer.")
             return
-        return base
-
-    @staticmethod
-    def vectorize(base):
-        vector = set(itertools.chain.from_iterable(base))
-        matrix = np.zeros([len(base),len(vector)])
+        vector = set(itertools.chain.from_iterable(root))
+        matrix = np.zeros([len(root),len(vector)])
         for col, item in enumerate(vector):
-            for row, line in enumerate(base):
+            for row, line in enumerate(root):
                 matrix[row, col] = line.count(item)
         return vector, matrix
+        
+        
 
     @staticmethod
     def get_arguments(args):
@@ -46,9 +46,8 @@ class Helper:
         method = args[4] #freq #artex
         article_col = 'article'
         row_index = 0
-        normalizer = 'ultra_1'
+        word_normalizer = 'ultra_1'
         occurance = 2
-        article_col = 0
         if file_type == 'csv' and method == 'freq':
             if arg_size == 7:
                 article_col = args[5] #column name
@@ -60,21 +59,21 @@ class Helper:
             if arg_size == 9:
                 article_col = args[5] #column name
                 row_index = int(args[6]) #index of article.
-                normalizer = args[7] #stemming #lemmatizer #ultra_1 #ultra_n 
+                word_normalizer = args[7] #stemming #lemmatizer #ultra_1 #ultra_n 
                 occurance = int(args[8]) #Keep words with n occurances
             else:
                 print("Error**-Wrong number of argument for this type")
-                print("Example:- python main.py 'filepath/name.csv' 'dataframe' num_sentences 'freq' 'col_name' index 'normalizer' occurances")
+                print("Example:- python main.py 'dailymail/dataset/train.csv' 'dataframe' 7 'artex' 'article' 1 'ultra_1' 2")
         elif file_type == 'text' and method == 'artex':
             if arg_size == 7:
-                normalizer = args[5] #stemming #lemmatizer #ultra_1 #ultra_n 
+                word_normalizer = args[5] #stemming #lemmatizer #ultra_1 #ultra_n 
                 occurance = int(args[6]) #Keep words with n occurances            
             else:
                 print("Error**-Wrong number of argument for this type")
-                print("Example:- python main.py 'filepath/name.csv' 'dataframe' num_sentences 'freq' 'normalizer' occurances")
+                print("Example:- python main.py 'filepath/name.csv' 'dataframe' num_sentences 'freq' 'lemma' occurances")
 
 
-        return file_path, file_type, num_sentences, method, article_col, row_index, normalizer, occurance
+        return file_path, file_type, num_sentences, method, article_col, row_index, word_normalizer, occurance
     
 
 
