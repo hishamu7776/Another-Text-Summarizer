@@ -24,7 +24,7 @@ class Preprocess:
         self.sentences.extend(sent_tokenize(self.document))
         return self.sentences
 
-    def sentence_filter(self, stopwords, occurance=2):
+    def sentence_filter(self, stopwords, min_freq=2):
         PUNCTUATION_RE = re.compile('[^\w\s]')
         #SPACE_RE = re.compile('[\s]+')
         NEW_LINE = re.compile('\n')
@@ -50,9 +50,9 @@ class Preprocess:
 
         for index, word_list in enumerate(sentence_vectors_temp):
             sentence_vector = [
-                word for word in word_list if self.word_freq[word] >= occurance
+                word for word in word_list if self.word_freq[word] >= min_freq
             ]
-            if len(sentence_vector) >= occurance:
+            if len(sentence_vector) >= min_freq:
                 self.sentence_vectors.append(sentence_vector)
                 self.sentence_vectors_indexes.append(index_list_temp[index])
 

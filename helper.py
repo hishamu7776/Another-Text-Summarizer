@@ -1,79 +1,76 @@
 import itertools
+import os
 import numpy as np
 from nltk.stem import WordNetLemmatizer, PorterStemmer
+from evaluator import Evaluator
+from plots import Plots
 
+class Helper: 
+    @staticmethod
+    def read_data(path):
+        text_path, summary_path = os.listdir(path)
+        text_path = os.path.join(path,text_path)
+        summary_path = os.path.join(path,summary_path)
+        texts,summaries = [],[]
+        for root, dirs, files in os.walk(path):
+            if len(dirs) == 0:
+                if text_path in root:
+                    for file in files:
+                        f = open(os.path.join(root,file), "r",encoding = 'ISO-8859-1')
+                        texts.append(f.read())
+                if summary_path in root:
+                    for file in files:
+                        f = open(os.path.join(root,file), "r",encoding = 'ISO-8859-1')
+                        summaries.append(f.read())
+        return texts, summaries
 
-class Helper:    
+    @staticmethod
+    def read_file(text_path, summary_path):
+        text_file = open(text_path, "r",encoding = 'ISO-8859-1')
+        text = text_file.read()
+        summary_file = open(summary_path, "r",encoding = 'ISO-8859-1')
+        summary = summary_file.read()
+        return text, summary
+
     @staticmethod
     def vectorize_word(sentences = None, word_normalizer = "stem", fix = 1):
-
+        Evaluator.mantal(sentences)
         root = list()
         if word_normalizer == "stem":
+            TITLE = 'Stemming'
             stemmer = PorterStemmer()
             for sentence in sentences:
                 sentence = [stemmer.stem(word) for word in sentence]
                 root.append(sentence)
         elif word_normalizer == "lemma":
+            TITLE = "Lemmatization"
             lemmatizer = WordNetLemmatizer()
             for sentence in sentences:
                 sentence = [lemmatizer.lemmatize(word, pos="a") for word in sentence]
                 root.append(sentence)
         elif word_normalizer == "ultra":
+            TITLE = f"Ultra Stemming Fix {fix}"
             for sentence in sentences:
                 sentence = [word[:fix] for word in sentence]
                 root.append(sentence)
         elif word_normalizer == "raw":
+            TITLE = "Raw Text"
             root = sentences
         else:
             print(
                 "Error**The assigned normalizer does not support or incorrect normalizer.")
             return
+
         vector = set(itertools.chain.from_iterable(root))
         matrix = np.zeros([len(root),len(vector)])
         for col, item in enumerate(vector):
             for row, line in enumerate(root):
                 matrix[row, col] = line.count(item)
+        
+        #matrix_density = Evaluator.matrix_density(matrix)
+        #Plots.plot_density(matrix=matrix_density, x_tick=vector, y_tick=np.arange(0,matrix_density.shape[0],1),title=TITLE,labels=['density', 'units'])
         return vector, matrix
         
-        
-
-    @staticmethod
-    def get_arguments(args):
-        arg_size = len(args) 
-        file_path = args[1] #Takes only csv or txt file. #../dailymail/dataset/test.csv
-        file_type = args[2] #text #dataframe
-        num_sentences = int(args[3]) #Number of sentences needed in summary.
-        method = args[4] #freq #artex
-        article_col = 'article'
-        row_index = 0
-        word_normalizer = 'ultra_1'
-        occurance = 2
-        if file_type == 'csv' and method == 'freq':
-            if arg_size == 7:
-                article_col = args[5] #column name
-                row_index = int(args[6]) #index of article.                
-            else:
-                print("Error**-Wrong number of argument for this type")
-                print("Example:- python main.py 'filepath/name.csv' 'dataframe' num_sentences 'freq' 'col_name' index")
-        elif file_type == 'csv' and method == 'artex':
-            if arg_size == 9:
-                article_col = args[5] #column name
-                row_index = int(args[6]) #index of article.
-                word_normalizer = args[7] #stemming #lemmatizer #ultra_1 #ultra_n 
-                occurance = int(args[8]) #Keep words with n occurances
-            else:
-                print("Error**-Wrong number of argument for this type")
-                print("Example:- python main.py 'dailymail/dataset/train.csv' 'dataframe' 7 'artex' 'article' 1 'ultra_1' 2")
-        elif file_type == 'text' and method == 'artex':
-            if arg_size == 7:
-                word_normalizer = args[5] #stemming #lemmatizer #ultra_1 #ultra_n 
-                occurance = int(args[6]) #Keep words with n occurances            
-            else:
-                print("Error**-Wrong number of argument for this type")
-                print("Example:- python main.py 'filepath/name.csv' 'dataframe' num_sentences 'freq' 'lemma' occurances")
-
-
-        return file_path, file_type, num_sentences, method, article_col, row_index, word_normalizer, occurance
     
 
 

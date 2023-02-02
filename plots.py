@@ -1,10 +1,12 @@
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import figure
 import seaborn as sns
 
 
 class Plots:
     @staticmethod
-    def plot_density(matrix=None,x_tick=None, y_tick= None,title=None,labels=None, annot=False):
+    def plot_density(matrix=None,x_tick=None, y_tick= None, title=None, labels=None, annot=False):
+        figure(figsize=(12, 10), dpi=100)
         plt.title(title)
         plt.ylabel(labels[0])
         plt.xlabel(labels[1])
@@ -29,7 +31,6 @@ class Plots:
         plt.xlabel(x_label)
         plt.show()
         return
-        
     
     
 

@@ -1,8 +1,40 @@
 import numpy as np
 from scipy import stats
 from plots import Plots
+from nltk.stem import WordNetLemmatizer, PorterStemmer
+import itertools
+
 
 class Evaluator:
+    @staticmethod
+    def mantal(sentences):
+        raw_matrix = sentences
+        stem_matrix = []
+        lemma_matrix = []
+        u_fix_1_matrix = []
+        u_fix_2_matrix = []
+        stemmer = PorterStemmer()
+        lemmatizer = WordNetLemmatizer()
+        for sentence in sentences:
+            stems = [stemmer.stem(word) for word in sentence]
+            stem_matrix.append(stems)
+            lemma_matrix.append([lemmatizer.lemmatize(word) for word in sentence])
+            u_fix_1_matrix.append([stem[:1] for stem in stems])
+            u_fix_2_matrix.append([stem[:2] for stem in stems])
+        matrices = [Evaluator.create_matrix(raw_matrix), Evaluator.create_matrix(stem_matrix), Evaluator.create_matrix(lemma_matrix), Evaluator.create_matrix(u_fix_1_matrix), Evaluator.create_matrix(u_fix_2_matrix)]
+        labels = ['Raw', 'Stem', 'Lemma', 'Fix 1', 'Fix 2']
+        Evaluator.cross_correlate_all(matrices=matrices,names=labels)
+
+    
+    @staticmethod
+    def create_matrix(root):
+        vector = set(itertools.chain.from_iterable(root))
+        matrix = np.zeros([len(root),len(vector)])
+        for col, item in enumerate(vector):
+            for row, line in enumerate(root):
+                matrix[row, col] = line.count(item)
+        return matrix
+
     @staticmethod
     def matrix_density(matrix):
         P, N = matrix.shape
@@ -85,5 +117,7 @@ class Evaluator:
         for i in range(len(matrices)):
             for j in range(len(matrices)):
                 cor_mat[i,j] = Evaluator.mantel_test(s_prime=matrices[i],s=matrices[j])
-        Plots.plot_density(matrix=cor_mat, x_tick=names, y_tick= names, title="Correlation", labels=["methods","methods"], annot=True)
+
+        print(cor_mat)
+        Plots.plot_density(matrix=cor_mat, x_tick=names, y_tick= names, title=" Mantel test correlation", labels=["Normalizer","Normalizer"], annot=True)
         return
