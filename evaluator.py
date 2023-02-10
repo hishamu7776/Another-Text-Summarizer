@@ -118,6 +118,25 @@ class Evaluator:
             for j in range(len(matrices)):
                 cor_mat[i,j] = Evaluator.mantel_test(s_prime=matrices[i],s=matrices[j])
 
-        print(cor_mat)
-        Plots.plot_density(matrix=cor_mat, x_tick=names, y_tick= names, title=" Mantel test correlation", labels=["Normalizer","Normalizer"], annot=True)
+        Plots.plot_mantel(matrix=cor_mat, x_tick=names, y_tick= names, title=" Mantel test correlation", labels=["Normalizer","Normalizer"], annot=True)
         return
+
+    @staticmethod
+    def compute_rouge(real, generated):
+        real_tokens = real.split()
+        generated_tokens = generated.split()
+
+        # Compute ROGUE-1
+        real_bigrams = set(zip(real_tokens, real_tokens[1:]))
+        generated_bigrams = set(zip(generated_tokens, generated_tokens[1:]))
+        rouge_1 = len(real_bigrams & generated_bigrams) / len(generated_bigrams)
+        
+        # Compute ROGUE-2
+        real_trigrams = set(zip(real_tokens, real_tokens[1:], real_tokens[2:]))
+        generated_trigrams = set(zip(generated_tokens, generated_tokens[1:], generated_tokens[2:]))
+        rouge_2 = len(real_trigrams & generated_trigrams) / len(generated_trigrams)
+        
+        # Compute ROGUE-L
+        rouge_l = min(len(generated_tokens) / len(real_tokens), len(real_tokens) / len(generated_tokens))
+
+        return rouge_1, rouge_2, rouge_l

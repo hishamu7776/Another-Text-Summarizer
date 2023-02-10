@@ -1,3 +1,4 @@
+import time
 import heapq
 import numpy as np
 from helper import Helper
@@ -10,9 +11,11 @@ class Summarizer:
         self.weighted_word_freq = dict()
         self.sentence_scores = dict((sentence,0) for sentence in self.preprocess.sentences)
         self.matrix = None #Store PxN matrix for VSM
+        self.time_elapsed = 0
 
     def summarize(self, word_normalizer = 'stem'):
         if self.summarizer == 'freq':
+            start = time.time()
             maximum_frequency = max(self.preprocess.word_freq.values())
             for word in self.preprocess.word_freq:
                 self.weighted_word_freq[word] = self.preprocess.word_freq[word]/maximum_frequency
@@ -22,6 +25,8 @@ class Summarizer:
                     if word in self.weighted_word_freq:
                         score+=self.weighted_word_freq[word]
                 self.sentence_scores[self.preprocess.sentences[index]] = round(score,3)
+            self.time_elapsed =  time.time()-start
+            
         elif self.summarizer == 'artex':
             #self.preprocess.sentence_vectors
             #self.preprocess.sentence_vectors_indexes
@@ -32,7 +37,9 @@ class Summarizer:
             except:
                 fix = 0
             _, self.matrix = Helper.vectorize_word(sentences=self.preprocess.sentence_vectors, word_normalizer = word_normalizer, fix=fix)
-            self.artex()        
+            start = time.time()
+            self.artex()
+            self.time_elapsed =  time.time()-start
         return self.find_summary(num_sentences=self.num_sentences, scores=self.sentence_scores)
 
     

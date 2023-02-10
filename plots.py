@@ -12,6 +12,16 @@ class Plots:
         plt.xlabel(labels[1])
         sns.heatmap(data = matrix ,xticklabels=x_tick, yticklabels=y_tick,cbar=False, annot=annot)
         plt.savefig('./plots/'+title+'.png')
+
+    @staticmethod
+    def plot_mantel(matrix=None,x_tick=None, y_tick= None, title=None, labels=None, annot=False):
+        fig, ax = plt.subplots(figsize=(8,8))
+        plt.ylabel(labels[0])
+        plt.xlabel(labels[1])
+        sns.heatmap(data = matrix, xticklabels=x_tick, yticklabels=y_tick, cbar=False, annot=annot, ax=ax)
+        plt.yticks(rotation=0, ha='right')
+        plt.xticks(rotation=0, ha='center', position=(0,1.04))
+        plt.savefig('./plots/'+title+'.png')
     
     @staticmethod
     def bar_plot(x_val = None, y_val = None, title = None, xlabel=None, ylabel=None, xtick=None,ytick=None):

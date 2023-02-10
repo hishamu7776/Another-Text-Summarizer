@@ -34,7 +34,7 @@ class Helper:
 
     @staticmethod
     def vectorize_word(sentences = None, word_normalizer = "stem", fix = 1):
-        Evaluator.mantal(sentences)
+        #Evaluator.mantal(sentences)
         root = list()
         if word_normalizer == "stem":
             TITLE = 'Stemming'
